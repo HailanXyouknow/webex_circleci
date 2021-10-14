@@ -1,0 +1,25 @@
+description: >
+  This command sends a message.
+# What will this command do?
+# Descriptions should be short, simple, and clear.
+parameters:
+  N:
+    type: string
+    default: ""
+    description: "Name of Webex Room/Space"
+  M:
+    type: string
+    default: "This is a message sent from CircleCI"
+    description: "The message to send to Webex Room/Space"
+  # T:
+  #   type: string
+  #   default: $T
+  #   description: "The token of the Webex Teams bot"
+steps:
+  - run:
+      environment:
+        N: <<parameters.N>>
+        M: <<parameters.M>>
+        # T: <<parameters.T>>
+      name: Send message
+      command: <<include(scripts/notify.sh)>>

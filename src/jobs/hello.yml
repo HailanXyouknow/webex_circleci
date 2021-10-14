@@ -1,15 +1,19 @@
 description: >
-  Sample description
-# What will this job do?
-# Descriptions should be short, simple, and clear.
+  This command sends a message.
 
 executor: default
 
 parameters:
-  to:
+  N:
     type: string
-    default: "World"
-    description: "Hello to whom?"
+    default: "CircelCITest2"
+    description: "Name of Webex Room/Space"
+  M:
+    type: string
+    default: "This is a message sent from CircleCI"
+    description: "The message to send to Webex Room/Space"
+
 steps:
-  - greet:
-      to: << parameters.to >>
+  - notify:
+      N: << parameters.N >>
+      M: << parameters.M >>
