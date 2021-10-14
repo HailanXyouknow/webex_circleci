@@ -24,13 +24,13 @@ Notify() {
             exit 1;
         fi
         
-        ROOMS=( $( echo $RESPONSE | jq -c '.items[] | select(.title==env.N)'))
+        ROOMS=( $( echo "$RESPONSE" | jq -c '.items[] | select(.title==env.N)'))
         if [ "${#ROOMS[@]}" != 1 ]; then
             echo "ERROR: Cannot determine Webex Room ID"
             echo "=== ${#ROOMS[@]} rooms found ==="
             echo "$RESPONSE" | jq '.items[] | select(.title==env.N)'
         else
-            R=$( echo "$ROOMS" | jq '.id' )
+            R=$( echo "${ROOMS[0]}" | jq '.id' )
             echo "Room ID found: $R"
         fi
     fi
