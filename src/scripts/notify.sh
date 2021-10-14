@@ -15,34 +15,36 @@ Notify() {
         exit -1
     fi
 
-    echo "R: ${R}"
-    echo "N: ${N}"
-    echo "M: ${M}"
-    echo "T: ${T}"
-
     # Determine R (Room ID) if it is not defined already
     if [ -z "${R}" ]; then
-        RESPONSE=$(curl https://webexapis.com/v1/rooms -X GET -H "Authorization: Bearer $T" )
-        echo "RESPONSE $RESPONSE"
+        RESPONSE=$(curl -s https://webexapis.com/v1/rooms -X GET -H "Authorization: Bearer $T" )
+        HAS_ERROR=$( echo $RESPONSE | jq '.errors' )
+        if [ "$HAS_ERROR" != "null" ]; then
+            echo "ERROR $HAS_ERROR"
+            exit -1;
+        fi
+        
         ROOMS=( $( echo $RESPONSE | jq -c '.items[] | select(.title==env.N)'))
-        echo "ROOMS $ROOMS"
         if [ "${#ROOMS[@]}" != 1 ]; then
             echo "ERROR: Cannot determine Webex Room ID"
             echo "=== ${#ROOMS[@]} rooms found ==="
             echo $RESPONSE | jq '.items[] | select(.title==env.N)'
         else
             R=$( echo $ROOMS | jq '.id' )
-            echo "Room id found: $R"
+            echo "Room ID found: $R"
         fi
     fi
 
     # Send message to Webex
-    echo "Sending message: ${M}"
-
-    RESPONSE2=$( curl https://webexapis.com/v1/messages -X POST \
-    -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
-    -d "{\"roomId\": $R,\"markdown\": \"$M\"}" )
-    echo $RESPONSE2
+    RESPONSE2=$( curl -s https://webexapis.com/v1/messages -X POST \
+        -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
+        -d "{\"roomId\": $R,\"markdown\": \"$M\"}" )
+    HAS_ERROR=$( echo $RESPONSE2 | jq '.errors' )
+    if [ "$HAS_ERROR" != "null" ]; then
+        echo "ERROR $HAS_ERROR"
+        exit -1;
+    fi
+    echo "Message sent: ${M}"
 }
 
 # Will not run if sourced for bats-core tests.
