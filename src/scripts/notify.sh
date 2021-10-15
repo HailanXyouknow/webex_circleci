@@ -24,7 +24,7 @@ Notify() {
             exit 1;
         fi
         
-        read -a ROOMS <<< $( echo "$RESPONSE" | jq -c '.items[] | select(.title==env.N)' )
+        read -ra ROOMS <<< "$( echo "$RESPONSE" | jq -c '.items[] | select(.title==env.N)' )"
 
         if [ "${#ROOMS[@]}" != 1 ]; then
             echo "ERROR: Cannot determine Webex Room ID"
